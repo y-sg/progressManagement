@@ -9,12 +9,21 @@ if (window.localStorage.getItem('task_data') != null) {
 function displayTasks () {
   var ret = [];
   for (var i = task_data.length-1; i >= 0; i--) {
-    var line = '<p>' + task_data[i]['taskName'] + ' ' + task_data[i]['val'] + '/' + task_data[i]['maxVal'];
-    line += '<input type="button" value="-" onClick="updateTask(' + String(i) + ', -1)">';
-    line += '<input type="button" value="+" onClick="updateTask(' + String(i) + ', +1)">';
-    line += '<input type="button" value="削除" onClick="deleteTask(' + String(i)+ ')">';
-    line += '</p>';
+    var line = '<tr>'
+    line += '<td class="col-xs-6 text-center">' + task_data[i]['taskName'] + '</td>'
+    line += '<td class="col-xs-2 text-center">' + task_data[i]['val'] + '/' + task_data[i]['maxVal'] + '</td>';
+    line += '<td class="col-xs-4 text-center">';
+    line += '<div class="row form-group form-inline">'
+    line += '<div class="col-md-2"><button type="button" class ="btn btn-default" onClick="updateTask(' + String(i) + ', -10)">-10</button></div>'
+    line += '<div class="col-md-2"><button type="button" class ="btn btn-default" onClick="updateTask(' + String(i) + ', -1)"> - </button></div>'
+    line += '<div class="col-md-2"><button type="button" class ="btn btn-default" onClick="updateTask(' + String(i) + ',  1)"> + </button></div>'
+    line += '<div class="col-md-2"><button type="button" class ="btn btn-default" onClick="updateTask(' + String(i) + ', 10)">+10</button></div>'
+    line += '<div class="col-md-4"><button type="button" class ="btn btn-danger" onClick="deleteTask(' + String(i)+ ')">削除</button></div>'
+    line += '</div>'
+    line += '</td>';
+    line += '</tr>';
     ret.push(line);
+    console.log(line);
   }
   $($('.task-list')).html(ret);
 }
