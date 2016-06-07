@@ -81,7 +81,7 @@ function setGraph (maxVal, val, id) {
 		.attr("x", function( d ) {
 			return Math.max(0, (d * barScale - (String(d) + '/' + String(maxVal)).length * 11 ) );
 		})
-	  .attr("y", 15);
+	  .attr("y", 12);
 }
 
 
