@@ -32,6 +32,59 @@ function isLogin() {
     return result;
 }
 
+// グラフ描画
+function setGraph (maxVal, val, id) {
+// http://www.openspc2.org/reibun/D3.js/code/graph/horizontal-bar/3001/index.html
+
+	var list = [val];
+	var svgWidth = 200; // SVG領域の横幅
+	var svgHeight = 16;    // SVG領域の縦幅
+	var barScale = 200/maxVal;   // 2倍サイズで描画
+	var yBarSize = 16;  // 棒グラフの縦幅
+	var xOffset = 0;    // 横方向のオフセット
+	var svg = d3.select(id).append("svg")
+	    .attr("width", svgWidth).attr("height", svgHeight)
+	var bar = svg.selectAll("rect") // SVGでの四角形を示す要素を指定
+	    .data(list) // データを設定
+	    .enter()
+	    .append("rect") // SVGでの四角形を示す要素を生成
+	    .attr("x", xOffset) // 横棒グラフなのでX座標は0+オフセット。これはSVG上での座標
+	    .attr("y", function(d,i){   // Y座標を配列の順序に応じて計算
+	        return i * yBarSize;
+	    })
+	    .attr("width", function(d){ // 横幅を配列の内容に応じて計算
+	        return "0px";
+	    })
+	    .attr("height", "16")   // 棒グラフの高さを指定
+	    .attr("style", "fill:rgb(0,240,0)") // 棒グラフの色を赤色に設定
+	// 目盛りを表示するためにスケールを設定
+	var xScale = d3.scale.linear()  // スケールを設定
+	    .domain([0, maxVal])   // 元のサイズ
+	    .range([0, 200]);  // 実際の出力サイズ
+	// 目盛りを設定し表示する
+	svg.append("g")
+	    .attr("class", "axis")
+	    .attr("transform", "translate("+xOffset+", "+list.length*yBarSize+")");
+	// アニメーション処理
+	bar
+	.transition()
+	.attr("width", function(d){ // 横幅を配列の内容に応じて計算
+	    return (d*barScale) +"px";
+	})
+	svg.selectAll("text")
+	   .data(list)
+	   .enter()
+	   .append("text")
+		 .text(function(d) {
+				return (String(d) + '/' + String(maxVal));
+		})
+		.attr("x", function( d ) {
+			return Math.max(0, (d * barScale - (String(d) + '/' + String(maxVal)).length * 11 ) );
+		})
+	  .attr("y", 15);
+}
+
+
 // データを表示する
 function displayTasks () {
   if (isLogin() == 'ng') return;
@@ -40,8 +93,8 @@ function displayTasks () {
   var ret = [];
   for (var i = task_data.length-1; i >= 0; i--) {
     var line = '<tr>';
-    line += '<td class="col-xs-6 text-center">' + task_data[i]['taskName'] + '</td>';
-    line += '<td class="col-xs-2 text-center">' + task_data[i]['val'] + '/' + task_data[i]['maxVal'] + '</td>';
+    line += '<td class="col-xs-4 text-center">' + task_data[i]['taskName'] + '</td>';
+    line += '<td class="col-xs-4 text-center" id = "graph'+ String(i) + '"></td>';
     line += '<td class="col-xs-4 text-center">';
     line += '<div class="row form-group form-inline">';
     line += '<div class="col-md-2"><button type="button" class ="btn btn-default" onClick="updateTask(' + String(i) + ', -10)">-10</button></div>';
@@ -53,9 +106,11 @@ function displayTasks () {
     line += '</td>';
     line += '</tr>';
     ret.push(line);
-    console.log(line);
   }
   $($('.task-list')).html(ret);
+  for (var i = task_data.length-1; i >= 0; i--) {
+    setGraph(task_data[i]['maxVal'], task_data[i]['val'], '#graph'+ String(i));
+  }
 }
 displayTasks();
 

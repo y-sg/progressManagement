@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+<style>
+svg {
+	border:1px solid #005500;
+	background-color: gray;
+}
+.axis text {
+		font-family: sans-serif;
+		font-size: 11px;
+}
+}
+</style>
 <title>進捗管理</title>
 <meta charset="utf-8">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -40,8 +51,8 @@
 <table class="table table-striped">
   <thead>
       <tr>
-        <th class="col-xs-6 text-center">タスク名</th>
-        <th class="col-xs-2 text-center">進捗</th>
+        <th class="col-xs-4 text-center">タスク名</th>
+        <th class="col-xs-4 text-center">進捗</th>
         <th class="col-xs-4 text-center"></th>
       </tr>
   </thead>
@@ -49,7 +60,7 @@
   </tbody>
 </table>
 
-
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="main.js"></script>
