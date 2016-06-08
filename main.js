@@ -1,5 +1,6 @@
 // サーバーからデータ読み込み
 function getData(){
+
   var result = '';
   $.ajax({
             type: 'get',
@@ -12,10 +13,13 @@ function getData(){
         }).fail(function(XMLHttpRequest, textStatus, errorThrown){
             alert(errorThrown);
         });
+
     return result;
+
 }
 
 function isLogin() {
+
   var result = '';
   $.ajax({
             type: 'get',
@@ -24,12 +28,13 @@ function isLogin() {
             scriptCharset: 'utf-8',
             async: false
         }).done(function(data, textStatus, XMLHttpRequest){
-            console.log(data);
             result = data;
         }).fail(function(XMLHttpRequest, textStatus, errorThrown){
             alert(errorThrown);
         });
+        
     return result;
+
 }
 
 // グラフ描画
@@ -56,7 +61,7 @@ function setGraph (maxVal, val, id) {
 	        return "0px";
 	    })
 	    .attr("height", "16")   // 棒グラフの高さを指定
-	    .attr("style", "fill:rgb(0,240,0)") // 棒グラフの色を赤色に設定
+	    .attr("style", "fill:rgb(16,220,16)") // 棒グラフの色を赤色に設定
 	// 目盛りを表示するためにスケールを設定
 	var xScale = d3.scale.linear()  // スケールを設定
 	    .domain([0, maxVal])   // 元のサイズ
@@ -82,14 +87,15 @@ function setGraph (maxVal, val, id) {
 			return Math.max(0, (d * barScale - (String(d) + '/' + String(maxVal)).length * 11 ) );
 		})
 	  .attr("y", 12);
+
 }
 
 
 // データを表示する
-function displayTasks () {
+function displayTasks (task_data) {
+
   if (isLogin() == 'ng') return;
 
-  var task_data = getData();
   var ret = [];
   for (var i = task_data.length-1; i >= 0; i--) {
     var line = '<tr>';
@@ -107,12 +113,14 @@ function displayTasks () {
     line += '</tr>';
     ret.push(line);
   }
+
   $($('.task-list')).html(ret);
   for (var i = task_data.length-1; i >= 0; i--) {
     setGraph(task_data[i]['maxVal'], task_data[i]['val'], '#graph'+ String(i));
   }
+
 }
-displayTasks();
+displayTasks(getData());
 
 // ログインチェック
 $.ajax({
@@ -143,6 +151,7 @@ $.ajax({
 
 // サーバに保存
 function setData (task_data) {
+
   if (isLogin() == 'ng') return;
 
   $.ajax({
@@ -151,14 +160,16 @@ function setData (task_data) {
             dataType : 'jsonp',
             scriptCharset: 'utf-8'
         }).done(function(data, textStatus, XMLHttpRequest){
-          displayTasks();
+
         }).fail(function(XMLHttpRequest, textStatus, errorThrown){
             alert(errorThrown);
         });
+
 }
 
 // タスクを追加
 function addTask () {
+
   if (isLogin() == 'ng') return;
 
   var task_data = getData();
@@ -173,24 +184,35 @@ function addTask () {
     alert('0以外の数字を入力！');
     return;
   }
+
   task_data.push({'taskName': task_name, 'val': 0, 'maxVal': max_val});
   setData(task_data);
+  displayTasks(task_data);
+
 }
 
 // タスクを更新
 function updateTask (task_id, change_val) {
+
   if (isLogin() == 'ng') return;
 
   var task_data = getData();
-  task_data[task_id]['val']+=change_val;
+  task_data[task_id]['val'] += change_val;
+  task_data[task_id]['val'] = Math.max(0, Math.min(task_data[task_id]['val'], task_data[task_id]['maxVal']));
   setData(task_data);
+  $('#graph' + String(task_id)).html('');
+  setGraph (task_data[task_id]['maxVal'], task_data[task_id]['val'], '#graph' + String(task_id));
+
 }
 
 // タスクを削除
 function deleteTask (task_id) {
+
   if (isLogin() == 'ng') return;
 
   var task_data = getData();
   task_data.splice(task_id, 1);
   setData(task_data);
+  displayTasks(task_data);
+
 }
